@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AgendaV3</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_nuevo">New Contact</string>
+    <string name="action_cerrar">Close Contact List</string>
+    <string name="agenda">CONTACT LIST A-Z</string>
+    <string name="nombreHint">Name</string>
+    <string name="mailHint">Email</string>
+    <string name="telefonoHint">Phone</string>
+    <string name="accept">Accept</string>
+    <string name="cancel">Cancel</string>
+    <string name="anadido">Contact Added</string>
+    <string name="editado">Contact Edited</string>
+    <string name="borrar">Delete Contact</string>
+    <string name="editar">Edit Contact</string>
+    <string name="deseaEliminar">Are you sure you want to delete?</string>
+    <string name="carga">Photo upload</string>
+    <string name="donde">Pick from</string>
+    <string name="galeria">Galery</string>
+    <string name="imagenes">image/*</string>
+    <string name="camara">Camera</string>
+    <string name="datos">data</string>
+    <string name="borrado">Contact Deleted</string>
+    <string name="llamada">Phone Call</string>
+    <string name="mail">Send an Email</string>
+    <string name="opcion">List of Options</string>
+    <string name="hacer">What do you want to do?</string>
+    <string name="mailto">mailto:</string>
+    <string name="text">text/plain</string>
+    <string name="nombreOblig">Name field is required.</string>
+    <string name="tlfOblig">Phone field is required.</string>
+    <string name="textMessage">Text Message</string>
+    <string name="error">Error with image upload</string>
+
+</resources>

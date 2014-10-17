@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AgendaV3</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_nuevo">Nuevo Contacto</string>
+    <string name="action_cerrar">Cerrar Agenda</string>
+    <string name="agenda">AGENDA A-Z</string>
+    <string name="nombreHint">Nombre</string>
+    <string name="mailHint">Email</string>
+    <string name="telefonoHint">Telefono</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="anadido">Contacto Añadido</string>
+    <string name="editado">Contacto Editado</string>
+    <string name="borrar">Borrar Contacto</string>
+    <string name="editar">Editar Contacto</string>
+    <string name="deseaEliminar">¿Desea eliminar el Contacto?</string>
+    <string name="carga">Carga de fotos</string>
+    <string name="donde">Elija de donde quiere cargar la foto</string>
+    <string name="galeria">Galeria</string>
+    <string name="imagenes">image/*</string>
+    <string name="camara">Cámara</string>
+    <string name="datos">data</string>
+    <string name="borrado">Contacto Borrado</string>
+    <string name="llamada">Hacer Llamada</string>
+    <string name="mail">Enviar Email</string>
+    <string name="opcion">Seleccione una opcion</string>
+    <string name="hacer">¿Qué desea hacer?</string>
+    <string name="nombreOblig">El campo Nombre es obligatorio.</string>
+    <string name="tlfOblig">El campo Telefono es obligatorio.</string>
+    <string name="textMessage">Mensaje de texto</string>
+    <string name="error">Error al cargar la imagen</string>
+
+</resources>

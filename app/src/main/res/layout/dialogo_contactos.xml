@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ivFoto"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:minHeight="100dp"
+        android:minWidth="100dp"
+        android:scaleType="center" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/etNombre"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivFoto"
+        android:layout_toEndOf="@+id/ivFoto"
+        android:hint="@string/nombreHint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/etMail"
+        android:layout_below="@+id/etNombre"
+        android:layout_alignLeft="@+id/etNombre"
+        android:layout_alignStart="@+id/etNombre"
+        android:hint="@string/mailHint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/etTelefono"
+        android:layout_below="@+id/etMail"
+        android:layout_toRightOf="@+id/ivFoto"
+        android:layout_toEndOf="@+id/ivFoto"
+        android:hint="@string/telefonoHint" />
+
+</RelativeLayout>

@@ -275,7 +275,7 @@ public class Principal extends Activity {
                     public void onClick(View view) {
                         boolean nombre = false;
                         boolean telefono = false;
-
+                    //asdfasdfasdf
                         if(campoVacio(et1.getText().toString())) {
                             nombre = false;
                             tostada(getString(R.string.nombreOblig));

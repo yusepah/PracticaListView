@@ -15,7 +15,7 @@
     <string name="editado">Contact Edited</string>
     <string name="borrar">Delete Contact</string>
     <string name="editar">Edit Contact</string>
-    <string name="deseaEliminar">Are you sure you want to delete?</string>
+    <string name="deseaEliminar">Are you sure?</string>
     <string name="carga">Photo upload</string>
     <string name="donde">Pick from</string>
     <string name="galeria">Galery</string>
@@ -33,5 +33,8 @@
     <string name="tlfOblig">Phone field is required.</string>
     <string name="textMessage">Text Message</string>
     <string name="error">Error with image upload</string>
+    <string name="borrarTodos">Delete ALL</string>
+    <string name="confirmarTodos">Delete ALL List</string>
+    <string name="todosBorrados">ALL List Deleted</string>
 
 </resources>

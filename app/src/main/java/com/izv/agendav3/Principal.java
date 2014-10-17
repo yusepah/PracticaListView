@@ -1,6 +1,5 @@
 package com.izv.agendav3;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,19 +9,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,15 +26,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
 
 public class Principal extends Activity {
 
+    //Declaracion de variables de clase
     private ArrayList<Contacto> contactos;
     private ListView lv;
     private Adaptador ad;
@@ -48,12 +42,13 @@ public class Principal extends Activity {
     private Bitmap foto;
     private boolean seleccionada;
     private Bitmap defecto;
-    int posicion;
 
     /***************************************************************/
     /*                      METODOS ON                             */
     /***************************************************************/
 
+    /*Método onActivityResult sobreescrito para obtejer las imagenes de
+                       la camara y de la galeria*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -61,8 +56,7 @@ public class Principal extends Activity {
             switch (requestCode) {
                 case TAKE_PICTURE:
                     Bundle extras = data.getExtras();
-                    Bitmap selectedImage = (Bitmap) extras.get(getString(R.string.datos));
-                    foto = selectedImage;
+                    foto = (Bitmap) extras.get(getString(R.string.datos));
                     ivNewUser.setImageBitmap(foto);
                     seleccionada = true;
                     break;
@@ -84,6 +78,8 @@ public class Principal extends Activity {
         }
     }
 
+    /*Metodo onContextItemSelected sobreescrito para Editar un contacto o
+                            Borrar un contacto*/
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -93,7 +89,7 @@ public class Principal extends Activity {
         if(id == R.id.accion_editar){
             ventanaContactos(0, vh.posicion);
         }else if(id == R.id.accion_borrar){
-            confirmacion(vh.posicion);
+            confirmacion(vh.posicion, 1);
         }
         return super.onContextItemSelected(item);
     }
@@ -102,7 +98,7 @@ public class Principal extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
-        initComponents();
+        initComponents();   //Metodo para inicializar mis variables
     }
 
     @Override
@@ -118,12 +114,17 @@ public class Principal extends Activity {
         return true;
     }
 
+    /*Metodo onOptionsItemSelected sobreescrito para Añadir un contacto o
+                            Editar un contacto*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_nuevo) {
             ventanaContactos(1, 0);
             return true;
+        }
+        if(id == R.id.accion_borrar){
+            confirmacion(-1, 0);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -132,23 +133,28 @@ public class Principal extends Activity {
     /*                      METODOS CLICK                          */
     /***************************************************************/
 
+    //Método para borrar un contacto dada una posicion
     public void borrar(View view){
         int posicion = (Integer)view.getTag();
-        confirmacion(posicion);
+        confirmacion(posicion, 1);
     }
 
+    //Método para editar un contacto dada una posicion
     public void edit(View v){
         int posicion = (Integer)v.getTag();
         ventanaContactos(0, posicion);
     }
 
+    /*Listener de la ListView para hacer Llamada, mandar Email o mandar SMS*/
     public void escuchadorLista(){
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
+                /*
                 Object o = view.getTag();
                 Adaptador.ViewHolder vh;
                 vh = (Adaptador.ViewHolder)o;
+                */
                 dialogoLlamadaMail(view);
             }
         });
@@ -158,26 +164,40 @@ public class Principal extends Activity {
     /*                 METODOS MENU/ALERTDIALOG                    */
     /***************************************************************/
 
-    public void confirmacion(final int posicion){
+    //Confirmación para borrar (id = 1)Un contacto o (id = 0) Todos los contactos
+    public void confirmacion(final int posicion, final int id){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setMessage(R.string.deseaEliminar);
-        alertDialog.setTitle(R.string.borrar);
-        alertDialog.setIcon(android.R.drawable.ic_delete);
+        if(id == 1) {
+            alertDialog.setTitle(R.string.borrar);
+            alertDialog.setIcon(android.R.drawable.ic_delete);
+        }
+        if(id == 0){
+            alertDialog.setTitle(R.string.confirmarTodos);
+            alertDialog.setIcon(android.R.drawable.stat_sys_warning);
+        }
         alertDialog.setCancelable(false);
         alertDialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int which)
             {
-                contactos.remove(posicion);
-                Collections.sort(contactos);
-                ad.notifyDataSetChanged();
-                tostada(getString(R.string.borrado));
+                if(id == 1) {
+                    contactos.remove(posicion);
+                    Collections.sort(contactos);
+                    ad.notifyDataSetChanged();
+                    tostada(getString(R.string.borrado));
+                }
+                if(id == 0){
+                    borrarTodos();
+                    tostada(getString(R.string.todosBorrados));
+                }
             }
         });
         alertDialog.setNegativeButton(android.R.string.no, null);
         alertDialog.show();
     }
 
+    //Dialogo para seleccionar una foto de la Cámara o de la Galería
     public void dialogoFoto(View v){
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this);
         myAlertDialog.setTitle(R.string.carga);
@@ -189,7 +209,6 @@ public class Principal extends Activity {
                 galeria();
             }
         });
-
         myAlertDialog.setNegativeButton(R.string.camara, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -199,6 +218,7 @@ public class Principal extends Activity {
         myAlertDialog.show();
     }
 
+    //Dialogo para hacer Llamada, mandar Email o mandar SMS
     public void dialogoLlamadaMail(final View view){
         AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(this);
         myAlertDialog.setTitle(R.string.opcion);
@@ -210,42 +230,37 @@ public class Principal extends Activity {
                 llamada(view);
             }
         });
-
         myAlertDialog.setNegativeButton(R.string.mail, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mandarEmail(view);
             }
         });
-
         myAlertDialog.setNeutralButton(R.string.textMessage, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                sms();
+                sms(view);
             }
         });
         myAlertDialog.show();
     }
 
-    //Para Editar accion = 0
-    //Para Agregar accion = 1
-    public void ventanaContactos(final int accion, final int posicion){
+    /*Ventana para (id = 0)Editar un contacto o (id = 1)Añadir un contacto */
+    public void ventanaContactos(final int id, final int posicion){
         final AlertDialog alert = new AlertDialog.Builder(this)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
-
         LayoutInflater inflater = LayoutInflater.from(this);
         final View vista = inflater.inflate(R.layout.dialogo_contactos, null);
         alert.setView(vista);
-
         final EditText et1, et2, et3;
         ivNewUser = (ImageView)vista.findViewById(R.id.ivFoto);
         et1 = (EditText)vista.findViewById(R.id.etNombre);
         et2 = (EditText)vista.findViewById(R.id.etMail);
         et3 = (EditText)vista.findViewById(R.id.etTelefono);
-
-        if(accion == 0) {
+        //Editar
+        if(id == 0) {
             alert.setTitle(R.string.editar);
             alert.setIcon(android.R.drawable.ic_menu_edit);
             ivNewUser.setImageBitmap(contactos.get(posicion).getImagen());
@@ -253,19 +268,22 @@ public class Principal extends Activity {
             et2.setText(contactos.get(posicion).getMail());
             et3.setText(contactos.get(posicion).getTelefono());
             seleccionada = false;
-        }else if(accion == 1){
+        }
+        //Añadir
+        if(id == 1){
             alert.setTitle(R.string.action_nuevo);
             alert.setIcon(android.R.drawable.ic_menu_add);
             ivNewUser.setImageBitmap(defecto);
         }
-
+        //Escuchador para editar un contacto al hacer click en la imagen del ListView
         ivNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialogoFoto(view);
             }
         });
-//pepe
+        /*Listener del boton Aceptar sobreescrito para poder validar el cambo Nombre y Telefono
+        *                           que son obligatorios*/
         alert.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
@@ -273,9 +291,7 @@ public class Principal extends Activity {
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        boolean nombre = false;
-                        boolean telefono = false;
-                    //asdfasdfasdf
+                        boolean nombre, telefono;
                         if(campoVacio(et1.getText().toString())) {
                             nombre = false;
                             tostada(getString(R.string.nombreOblig));
@@ -287,8 +303,8 @@ public class Principal extends Activity {
                             tostada(getString(R.string.tlfOblig));
                         }else
                             telefono = true;
-
-                        if(accion == 0){
+                        //Aceptar el contacto EDITADO
+                        if(id == 0){
                             if (nombre && telefono) {
                                 if (seleccionada) {
                                     contactos.get(posicion).setImagen(foto);
@@ -304,8 +320,9 @@ public class Principal extends Activity {
                                 tostada(getString(R.string.editado));
                                 alert.dismiss();
                             }
-
-                        } else if (accion == 1) {
+                        }
+                        //Aceptar el contacto AÑADIDO
+                        if (id == 1) {
                             if(nombre && telefono) {
                                 if (seleccionada) {
                                     contactos.add(new Contacto(et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), foto));
@@ -330,28 +347,54 @@ public class Principal extends Activity {
     /*                        AUXILIARES                           */
     /***************************************************************/
 
-    public void camara(){
-        Intent fotoPick = new Intent(
-                android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(fotoPick,
-                TAKE_PICTURE);
+    //Metodo que borra TODOS los contactos
+    public void borrarTodos(){
+        contactos.clear();
+        ad.notifyDataSetChanged();
     }
 
+    //Intent para obtener imagen de la camara
+    public void camara(){
+        Intent fotoPick = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(fotoPick,TAKE_PICTURE);
+    }
+
+    //Devuelve True si el campo esta vacio, false en caso contrario
     public boolean campoVacio(String campo){
         String aux = campo.trim();
-        if(aux.isEmpty()){
+        if(aux.isEmpty()) {
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
 
+    //Una lista precargada en la aplicacion
+    public void cargarListaPrueba(){
+        contactos.add(new Contacto("Aaron", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Angel", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Sergio", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Rafa", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Jonathan", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Josue", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Marian", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Ivan", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Alberto", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Mati", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Sandra", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Ainhoa", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Krys", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Guille", "example@expample.com", "666666666", defecto));
+        contactos.add(new Contacto("Patri", "example@expample.com", "666666666", defecto));
+    }
+
+    //Intent para obtener una imagen de la galeria
     public void galeria(){
         Intent fotoPick = new Intent(Intent.ACTION_PICK);
         fotoPick.setType(getString(R.string.imagenes));
         startActivityForResult(fotoPick, SELECT_IMAGE);
     }
 
+    //Inicializacion de todas las variables necesarias
     private void initComponents(){
         TextView text = (TextView)findViewById(R.id.tvAgenda);
         String udata=getString(R.string.agenda);
@@ -361,24 +404,7 @@ public class Principal extends Activity {
         Bitmap aux = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_launcher);
         defecto = Bitmap.createScaledBitmap(aux, 200, 250, false);
         contactos = new ArrayList<Contacto>();
-        /*
-        contactos.add(new Contacto("alber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("blber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("clber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("dlber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("elber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("flber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("glber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("hlber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("ilber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("jlber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("klber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("llber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("mlber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("nlber", "sinmail", "666666666", defecto));
-        contactos.add(new Contacto("olber", "sinmail", "666666666", defecto));
-        */
-
+        cargarListaPrueba();
         ad = new Adaptador(this, R.layout.lista_detalle, contactos);
         lv = (ListView)findViewById(R.id.lvLista);
         lv.setFastScrollEnabled(true);
@@ -388,6 +414,7 @@ public class Principal extends Activity {
         escuchadorLista();
     }
 
+    //Intent para realizar una llamada
     public void llamada(View view){
         Object o = view.getTag();
         Adaptador.ViewHolder vh;
@@ -398,8 +425,10 @@ public class Principal extends Activity {
         startActivity(intent);
     }
 
+    //Intent para enviar un Email
     public void mandarEmail(View view){
-        String[] TO = {contactos.get(posicion).getMail()};
+        Adaptador.ViewHolder vh = (Adaptador.ViewHolder)view.getTag();
+        String[] TO = {contactos.get(vh.posicion).getMail()};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse(getString(R.string.mailto)));
         emailIntent.setType(getString(R.string.text));
@@ -407,6 +436,7 @@ public class Principal extends Activity {
         startActivity(emailIntent);
     }
 
+    //Metodo que devuelve un Path dado un Uri
     private String getPath(Context context, Uri uri){
         Cursor cursor = null;
         try {
@@ -422,13 +452,14 @@ public class Principal extends Activity {
         }
     }
 
-    public void sms(){
-        Uri uri = Uri.parse("smsto:"+contactos.get(posicion).getTelefono());
+    //Intent para mandar sms
+    public void sms(View view){
+        Adaptador.ViewHolder vh = (Adaptador.ViewHolder)view.getTag();
+        Uri uri = Uri.parse("smsto:"+contactos.get(vh.posicion).getTelefono());
         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
         startActivity(it);
     }
     private void tostada(String s){
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
-
 }

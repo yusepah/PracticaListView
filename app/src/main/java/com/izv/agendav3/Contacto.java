@@ -1,7 +1,6 @@
 package com.izv.agendav3;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 
 /**
  * Created by 2dam on 06/10/2014.
@@ -54,7 +53,6 @@ public class Contacto implements Comparable<Contacto> {
     public String toString() {
         return super.toString();
     }
-
 
     @Override
     public int compareTo(Contacto contacto) {

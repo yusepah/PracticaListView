@@ -2,7 +2,6 @@ package com.izv.agendav3;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,8 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
     private ArrayList<Contacto> contactos;
     private int recurso;
     private LayoutInflater i;
-    HashMap<String, Integer> azIndexer;
-    String[]sections;
+    /*HashMap<String, Integer> azIndexer;
+    String[]sections;*/
 
 
     public Adaptador(Context context, int resource, ArrayList<Contacto> objects){
@@ -93,8 +92,7 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder vh = null;
-
+        ViewHolder vh;
         if(convertView == null){
             convertView = i.inflate(recurso, null);
             vh = new ViewHolder();
@@ -107,14 +105,14 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
         }else{
             vh = (ViewHolder)convertView.getTag();
         }
-
         Collections.sort(contactos);
         vh.posicion = position;
         vh.tv1.setText(contactos.get(position).getNombre());
         vh.tv2.setText(contactos.get(position).getMail());
         vh.tv3.setText(contactos.get(position).getTelefono());
         vh.tv3.setTag(position);
-        Bitmap imagen = Bitmap.createScaledBitmap(contactos.get(position).getImagen(), 200, 225, false);
+        Bitmap imagen = Bitmap.createScaledBitmap(contactos.get(position).getImagen(),
+                200, 225, false);
         vh.iv.setImageBitmap(imagen);
         vh.x.setTag(position);
         vh.iv.setTag(position);

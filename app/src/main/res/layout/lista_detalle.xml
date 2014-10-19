@@ -56,7 +56,8 @@
         android:textStyle="bold"
         android:layout_alignRight="@+id/tvAgenda"
         android:layout_alignEnd="@+id/tvAgenda"
-        android:typeface="monospace" />
+        android:typeface="monospace"
+        android:text="eMail" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -74,7 +75,8 @@
         android:layout_alignRight="@+id/tvMail"
         android:layout_alignEnd="@+id/tvMail"
         android:onClick="llamada"
-        android:typeface="monospace" />
+        android:typeface="monospace"
+        android:text="Phone" />
 
     <ImageView
         android:layout_width="wrap_content"

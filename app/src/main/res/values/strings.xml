@@ -7,7 +7,7 @@
     <string name="action_cerrar">Close Contact List</string>
     <string name="agenda">CONTACT LIST A-Z</string>
     <string name="nombreHint">Name</string>
-    <string name="mailHint">Email</string>
+    <string name="mailHint">eMail</string>
     <string name="telefonoHint">Phone</string>
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>

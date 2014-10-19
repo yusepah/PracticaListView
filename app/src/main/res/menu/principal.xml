@@ -11,7 +11,7 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
 
-    <item android:id="@+id/action_cerrar"
+    <item android:id="@+id/accion_cerrar"
         android:title="@string/action_cerrar"
         android:orderInCategory="100"
         android:showAsAction="never" />

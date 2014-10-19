@@ -122,9 +122,11 @@ public class Principal extends Activity {
         if (id == R.id.action_nuevo) {
             ventanaContactos(1, 0);
             return true;
-        }
-        if(id == R.id.accion_borrar){
+        }else if(id == R.id.accion_borrar){
             confirmacion(-1, 0);
+            return true;
+        }else if(id == R.id.accion_cerrar){
+            System.exit(0);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,11 +152,6 @@ public class Principal extends Activity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
-                /*
-                Object o = view.getTag();
-                Adaptador.ViewHolder vh;
-                vh = (Adaptador.ViewHolder)o;
-                */
                 dialogoLlamadaMail(view);
             }
         });
@@ -275,13 +272,15 @@ public class Principal extends Activity {
             alert.setIcon(android.R.drawable.ic_menu_add);
             ivNewUser.setImageBitmap(defecto);
         }
-        //Escuchador para editar un contacto al hacer click en la imagen del ListView
+
+        //Escuchador para seleccionar una imagen de la galeria o de la cámara
         ivNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialogoFoto(view);
             }
         });
+
         /*Listener del boton Aceptar sobreescrito para poder validar el cambo Nombre y Telefono
         *                           que son obligatorios*/
         alert.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -309,7 +308,8 @@ public class Principal extends Activity {
                                 if (seleccionada) {
                                     contactos.get(posicion).setImagen(foto);
                                 } else {
-                                    contactos.get(posicion).setImagen(contactos.get(posicion).getImagen());
+                                    contactos.get(posicion).setImagen
+                                            (contactos.get(posicion).getImagen());
                                 }
                                 contactos.get(posicion).setNombre(et1.getText().toString());
                                 contactos.get(posicion).setTelefono(et3.getText().toString());
@@ -325,9 +325,13 @@ public class Principal extends Activity {
                         if (id == 1) {
                             if(nombre && telefono) {
                                 if (seleccionada) {
-                                    contactos.add(new Contacto(et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), foto));
+                                    contactos.add(new Contacto(et1.getText().toString(),
+                                            et2.getText().toString(), et3.getText().toString(),
+                                            foto));
                                 } else {
-                                    contactos.add(new Contacto(et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), defecto));
+                                    contactos.add(new Contacto(et1.getText().toString(),
+                                            et2.getText().toString(), et3.getText().toString(),
+                                            defecto));
                                 }
                                 seleccionada = false;
                                 Collections.sort(contactos);
@@ -401,17 +405,18 @@ public class Principal extends Activity {
         SpannableString content = new SpannableString(udata);
         content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
         text.setText(content);
-        Bitmap aux = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_launcher);
-        defecto = Bitmap.createScaledBitmap(aux, 200, 250, false);
         contactos = new ArrayList<Contacto>();
-        cargarListaPrueba();
         ad = new Adaptador(this, R.layout.lista_detalle, contactos);
         lv = (ListView)findViewById(R.id.lvLista);
         lv.setFastScrollEnabled(true);
         lv.setAdapter(ad);
         registerForContextMenu(lv);
         seleccionada = false;
+        Bitmap aux = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                R.drawable.ic_launcher);
+        defecto = Bitmap.createScaledBitmap(aux, 200, 250, false);
         escuchadorLista();
+        cargarListaPrueba();
     }
 
     //Intent para realizar una llamada

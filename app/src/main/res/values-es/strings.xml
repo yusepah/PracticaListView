@@ -7,7 +7,7 @@
     <string name="action_cerrar">Cerrar Agenda</string>
     <string name="agenda">AGENDA A-Z</string>
     <string name="nombreHint">Nombre</string>
-    <string name="mailHint">Email</string>
+    <string name="mailHint">eMail</string>
     <string name="telefonoHint">Telefono</string>
     <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
@@ -34,5 +34,7 @@
     <string name="borrarTodos">Borrar TODOS</string>
     <string name="confirmarTodos">Borrar TODOS los Contactos</string>
     <string name="todosBorrados">Contactos Borrados</string>
+    <string name="mailto">mailto:</string>
+    <string name="text">text/plain</string>
 
 </resources>

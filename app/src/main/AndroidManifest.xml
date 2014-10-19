@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.izv.agendav3" >
-
     <!-- permiso de lectura de archivos en el area externa -->
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <!-- permiso de escritura de archivos en el área externa -->
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_agenda"
@@ -27,5 +22,6 @@
             </intent-filter>
         </activity>
     </application>
+
 
 </manifest>

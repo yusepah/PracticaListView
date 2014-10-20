@@ -36,5 +36,8 @@
     <string name="borrarTodos">Delete ALL</string>
     <string name="confirmarTodos">Delete ALL List</string>
     <string name="todosBorrados">ALL List Deleted</string>
+    <string name="about">About the app...</string>
+    <string name="acercaDe">This app was developed as a practice for the subject PDPM using ListView.
+        Made by Jose Alberto Delgado.</string>
 
 </resources>

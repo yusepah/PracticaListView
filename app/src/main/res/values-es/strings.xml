@@ -36,5 +36,8 @@
     <string name="todosBorrados">Contactos Borrados</string>
     <string name="mailto">mailto:</string>
     <string name="text">text/plain</string>
+    <string name="about">Acerca de...</string>
+    <string name="acercaDe">Esta aplicación ha sido desarrollada como práctica de la asignatura
+        PMDM del uso de ListView. Realizado por Jose Alberto Delgado.</string>
 
 </resources>

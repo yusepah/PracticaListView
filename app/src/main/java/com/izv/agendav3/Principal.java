@@ -127,6 +127,8 @@ public class Principal extends Activity {
             return true;
         }else if(id == R.id.accion_cerrar){
             System.exit(0);
+        }else if(id == R.id.accion_about){
+            acercaDe();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -350,6 +352,12 @@ public class Principal extends Activity {
     /***************************************************************/
     /*                        AUXILIARES                           */
     /***************************************************************/
+
+    //Para mostrar el dialogo acerca de...
+    public void acercaDe(){
+        Intent dialogo = new Intent(this, About.class);
+        startActivity(dialogo);
+    }
 
     //Metodo que borra TODOS los contactos
     public void borrarTodos(){

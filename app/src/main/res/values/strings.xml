@@ -1,41 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--Nombre de la aplicación-->
     <string name="app_name">AgendaV3</string>
-    <string name="hello_world">Hello world!</string>
+
+    <!--Menu-->
     <string name="action_nuevo">New Contact</string>
     <string name="action_cerrar">Close Contact List</string>
+
+    <!--Titulo-->
     <string name="agenda">CONTACT LIST A-Z</string>
+
+    <!--Hints-->
     <string name="nombreHint">Name</string>
     <string name="mailHint">eMail</string>
     <string name="telefonoHint">Phone</string>
+
+    <!--Botones-->
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
+
+    <!--Tostadas-->
     <string name="anadido">Contact Added</string>
     <string name="editado">Contact Edited</string>
+    <string name="borrado">Contact Deleted</string>
+    <string name="todosBorrados">ALL List Deleted</string>
+
+    <!--AlertDialog-->
     <string name="borrar">Delete Contact</string>
     <string name="editar">Edit Contact</string>
     <string name="deseaEliminar">Are you sure?</string>
     <string name="carga">Photo upload</string>
     <string name="donde">Pick from</string>
     <string name="galeria">Galery</string>
-    <string name="imagenes">image/*</string>
-    <string name="camara">Camera</string>
-    <string name="datos">data</string>
-    <string name="borrado">Contact Deleted</string>
     <string name="llamada">Phone Call</string>
     <string name="mail">Send an Email</string>
     <string name="opcion">List of Options</string>
     <string name="hacer">What do you want to do?</string>
     <string name="mailto">mailto:</string>
-    <string name="text">text/plain</string>
-    <string name="nombreOblig">Name field is required.</string>
-    <string name="tlfOblig">Phone field is required.</string>
     <string name="textMessage">Text Message</string>
-    <string name="error">Error with image upload</string>
     <string name="borrarTodos">Delete ALL</string>
     <string name="confirmarTodos">Delete ALL List</string>
-    <string name="todosBorrados">ALL List Deleted</string>
+
+    <!--Auxiliares-->
+    <string name="imagenes">image/*</string>
+    <string name="camara">Camera</string>
+    <string name="datos">data</string>
+    <string name="text">text/plain</string>
+
+    <!--Required-->
+    <string name="nombreOblig">Name field is required.</string>
+    <string name="tlfOblig">Phone field is required.</string>
+
+    <!--Error-->
+    <string name="error">Error with image upload</string>
+
+    <!--About-->
     <string name="about">About the app...</string>
     <string name="acercaDe">This app was developed as a practice for the subject PDPM using ListView.
         Made by Jose Alberto Delgado.</string>

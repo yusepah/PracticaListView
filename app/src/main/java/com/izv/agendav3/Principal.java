@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Xml;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,9 +27,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-
 
 public class Principal extends Activity {
 
@@ -40,8 +49,10 @@ public class Principal extends Activity {
     private final int TAKE_PICTURE = 2;
     private ImageView ivNewUser;
     private Bitmap foto;
+    private String fotoPath;
     private boolean seleccionada;
     private Bitmap defecto;
+    private String defectoPath;
 
     /***************************************************************/
     /*                      METODOS ON                             */
@@ -55,22 +66,10 @@ public class Principal extends Activity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case TAKE_PICTURE:
-                    Bundle extras = data.getExtras();
-                    foto = (Bitmap) extras.get(getString(R.string.datos));
-                    ivNewUser.setImageBitmap(foto);
-                    seleccionada = true;
+                    fotoCamara(data);
                     break;
                 case SELECT_IMAGE:
-                    Uri selectedImageUri = data.getData();
-                    String path = getPath(getApplicationContext(), selectedImageUri);
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeFile(path);
-                        foto = Bitmap.createScaledBitmap(bitmap, 220, 250, false);
-                        ivNewUser.setImageBitmap(foto);
-                        seleccionada = true;
-                    }catch(Exception c){
-                        tostada(getString(R.string.error));
-                    }
+                    fotoGaleria(data);
                     break;
             }
         }else{
@@ -94,11 +93,28 @@ public class Principal extends Activity {
         return super.onContextItemSelected(item);
     }
 
+    public void xml() throws IOException, XmlPullParserException {
+        File archivoXml = new File(getFilesDir(), "contactos.xml");
+        if(archivoXml.exists()){
+            leerXml();
+        }else{
+            crearXml();
+            leerXml();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
         initComponents();   //Metodo para inicializar mis variables
+        try {
+            xml();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -133,6 +149,22 @@ public class Principal extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList guardar = contactos;
+        outState.putParcelableArrayList("guardar", guardar);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        ArrayList <Contacto>aux;
+        aux = savedInstanceState.getParcelableArrayList("guardar");
+        contactos = aux;
+        ad.notifyDataSetChanged();
+    }
+
     /***************************************************************/
     /*                      METODOS CLICK                          */
     /***************************************************************/
@@ -159,6 +191,46 @@ public class Principal extends Activity {
         });
     }
 
+    public void escuchadorAceptar(final AlertDialog alert, final EditText et1, final EditText et2, final EditText et3, final int posicion, final int id){
+        /*Listener del boton Aceptar sobreescrito para poder validar el cambo Nombre y Telefono
+        *                           que son obligatorios*/
+        alert.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button b = alert.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Aceptar el contacto EDITADO
+                        if(id == 0){
+                            if(filtrar(et1, et3)) {
+                                aceptarEditado(posicion, et1, et2, et3);
+                                alert.dismiss();
+                            }
+                        }
+                        //Aceptar el contacto AÑADIDO
+                        if (id == 1) {
+                            if(filtrar(et1, et3)) {
+                                aceptarNuevo(et1, et2, et3);
+                                alert.dismiss();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void escuchadorImagen(){
+        //Escuchador para seleccionar una imagen de la galeria o de la cámara
+        ivNewUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogoFoto(view);
+            }
+        });
+
+    }
     /***************************************************************/
     /*                 METODOS MENU/ALERTDIALOG                    */
     /***************************************************************/
@@ -180,20 +252,25 @@ public class Principal extends Activity {
         {
             public void onClick(DialogInterface dialog, int which)
             {
-                if(id == 1) {
-                    contactos.remove(posicion);
-                    Collections.sort(contactos);
-                    ad.notifyDataSetChanged();
-                    tostada(getString(R.string.borrado));
-                }
-                if(id == 0){
-                    borrarTodos();
-                    tostada(getString(R.string.todosBorrados));
-                }
+                borrado(id, posicion);
             }
         });
         alertDialog.setNegativeButton(android.R.string.no, null);
         alertDialog.show();
+    }
+
+    //Borra un contacto o todos segun el id
+    public void borrado(int id, int posicion){
+        if(id == 1) {
+            contactos.remove(posicion);
+            crearXml();
+            ad.notifyDataSetChanged();
+            tostada(getString(R.string.borrado));
+        }
+        if(id == 0){
+            borrarTodos();
+            tostada(getString(R.string.todosBorrados));
+        }
     }
 
     //Dialogo para seleccionar una foto de la Cámara o de la Galería
@@ -255,97 +332,19 @@ public class Principal extends Activity {
         alert.setView(vista);
         final EditText et1, et2, et3;
         ivNewUser = (ImageView)vista.findViewById(R.id.ivFoto);
+        escuchadorImagen();
         et1 = (EditText)vista.findViewById(R.id.etNombre);
         et2 = (EditText)vista.findViewById(R.id.etMail);
         et3 = (EditText)vista.findViewById(R.id.etTelefono);
         //Editar
         if(id == 0) {
-            alert.setTitle(R.string.editar);
-            alert.setIcon(android.R.drawable.ic_menu_edit);
-            ivNewUser.setImageBitmap(contactos.get(posicion).getImagen());
-            et1.setText(contactos.get(posicion).getNombre());
-            et2.setText(contactos.get(posicion).getMail());
-            et3.setText(contactos.get(posicion).getTelefono());
-            seleccionada = false;
+            editar(alert, et1, et2, et3, posicion);
         }
         //Añadir
         if(id == 1){
-            alert.setTitle(R.string.action_nuevo);
-            alert.setIcon(android.R.drawable.ic_menu_add);
-            ivNewUser.setImageBitmap(defecto);
+            añadir(alert);
         }
-
-        //Escuchador para seleccionar una imagen de la galeria o de la cámara
-        ivNewUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogoFoto(view);
-            }
-        });
-
-        /*Listener del boton Aceptar sobreescrito para poder validar el cambo Nombre y Telefono
-        *                           que son obligatorios*/
-        alert.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button b = alert.getButton(AlertDialog.BUTTON_POSITIVE);
-                b.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        boolean nombre, telefono;
-                        if(campoVacio(et1.getText().toString())) {
-                            nombre = false;
-                            tostada(getString(R.string.nombreOblig));
-                        }else
-                            nombre = true;
-
-                        if(campoVacio(et3.getText().toString())) {
-                            telefono = false;
-                            tostada(getString(R.string.tlfOblig));
-                        }else
-                            telefono = true;
-                        //Aceptar el contacto EDITADO
-                        if(id == 0){
-                            if (nombre && telefono) {
-                                if (seleccionada) {
-                                    contactos.get(posicion).setImagen(foto);
-                                } else {
-                                    contactos.get(posicion).setImagen
-                                            (contactos.get(posicion).getImagen());
-                                }
-                                contactos.get(posicion).setNombre(et1.getText().toString());
-                                contactos.get(posicion).setTelefono(et3.getText().toString());
-                                contactos.get(posicion).setMail(et2.getText().toString());
-                                seleccionada = false;
-                                Collections.sort(contactos);
-                                ad.notifyDataSetChanged();
-                                tostada(getString(R.string.editado));
-                                alert.dismiss();
-                            }
-                        }
-                        //Aceptar el contacto AÑADIDO
-                        if (id == 1) {
-                            if(nombre && telefono) {
-                                if (seleccionada) {
-                                    contactos.add(new Contacto(et1.getText().toString(),
-                                            et2.getText().toString(), et3.getText().toString(),
-                                            foto));
-                                } else {
-                                    contactos.add(new Contacto(et1.getText().toString(),
-                                            et2.getText().toString(), et3.getText().toString(),
-                                            defecto));
-                                }
-                                seleccionada = false;
-                                Collections.sort(contactos);
-                                ad.notifyDataSetChanged();
-                                tostada(getString(R.string.anadido));
-                                alert.dismiss();
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        escuchadorAceptar(alert, et1, et2, et3, posicion, id);
         alert.show();
     }
 
@@ -353,15 +352,56 @@ public class Principal extends Activity {
     /*                        AUXILIARES                           */
     /***************************************************************/
 
+    public void aceptarNuevo(EditText et1, EditText et2, EditText et3){
+        if (seleccionada) {
+            contactos.add(new Contacto(et1.getText().toString(),
+                    et2.getText().toString(), et3.getText().toString(),
+                    fotoPath));
+            crearXml();
+        } else {
+            contactos.add(new Contacto(et1.getText().toString(),
+                    et2.getText().toString(), et3.getText().toString(),
+                    defectoPath));
+            crearXml();
+        }
+        seleccionada = false;
+        ad.notifyDataSetChanged();
+        tostada(getString(R.string.anadido));
+    }
+
+    public void aceptarEditado(int posicion, EditText et1, EditText et2, EditText et3){
+        if (seleccionada) {
+            Uri uri = getImageUri(getApplicationContext(), foto);
+            String path = getPath(getApplicationContext(), uri);
+            contactos.get(posicion).setImagen(path);
+        } else {
+            contactos.get(posicion).setImagen(contactos.get(posicion).getImagen());
+        }
+        contactos.get(posicion).setNombre(et1.getText().toString());
+        contactos.get(posicion).setTelefono(et3.getText().toString());
+        contactos.get(posicion).setMail(et2.getText().toString());
+        crearXml();
+        seleccionada = false;
+        ad.notifyDataSetChanged();
+        tostada(getString(R.string.editado));
+    }
+
     //Para mostrar el dialogo acerca de...
     public void acercaDe(){
         Intent dialogo = new Intent(this, About.class);
         startActivity(dialogo);
     }
 
+    public void añadir(AlertDialog alert){
+        alert.setTitle(R.string.action_nuevo);
+        alert.setIcon(android.R.drawable.ic_menu_add);
+        ivNewUser.setImageBitmap(defecto);
+    }
+
     //Metodo que borra TODOS los contactos
     public void borrarTodos(){
         contactos.clear();
+        crearXml();
         ad.notifyDataSetChanged();
     }
 
@@ -380,23 +420,98 @@ public class Principal extends Activity {
         return false;
     }
 
-    //Una lista precargada en la aplicacion
-    public void cargarListaPrueba(){
-        contactos.add(new Contacto("Aaron", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Angel", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Sergio", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Rafa", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Jonathan", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Josue", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Marian", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Ivan", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Alberto", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Mati", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Sandra", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Ainhoa", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Krys", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Guille", "example@expample.com", "666666666", defecto));
-        contactos.add(new Contacto("Patri", "example@expample.com", "666666666", defecto));
+    public void contacto(XmlSerializer docxml, int i) throws IOException {
+        docxml.startTag(null, "Contacto");
+
+        docxml.startTag(null, "Nombre");
+        docxml.text(contactos.get(i).getNombre());
+        docxml.endTag(null, "Nombre");
+
+        docxml.startTag(null, "Email");
+        docxml.text(contactos.get(i).getMail());
+        docxml.endTag(null, "Email");
+
+        docxml.startTag(null, "Telefono");
+        docxml.text(contactos.get(i).getTelefono());
+        docxml.endTag(null, "Telefono");
+
+        docxml.endTag(null, "Contacto");
+    }
+
+    public void crearXml(){
+        try {
+            File salida = new File(getFilesDir(), "contactos.xml");
+            FileOutputStream output = new FileOutputStream(salida);
+            XmlSerializer docxml = Xml.newSerializer();
+            docxml.setOutput(output, "UTF-8");
+            docxml.startDocument(null, Boolean.valueOf(true));
+            docxml.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+            docxml.startTag(null, "Contactos");
+            for(int i=0; i<contactos.size(); i++) {
+                contacto(docxml, i);
+            }
+            docxml.endTag(null, "Contactos");
+            docxml.endDocument();
+            docxml.flush();
+            output.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void editar(AlertDialog alert, EditText et1, EditText et2, EditText et3, int posicion){
+        alert.setTitle(R.string.editar);
+        alert.setIcon(android.R.drawable.ic_menu_edit);
+        Bitmap img = BitmapFactory.decodeFile(contactos.get(posicion).getImagen());
+        ivNewUser.setImageBitmap(img);
+        et1.setText(contactos.get(posicion).getNombre());
+        et2.setText(contactos.get(posicion).getMail());
+        et3.setText(contactos.get(posicion).getTelefono());
+        seleccionada = false;
+    }
+
+    public boolean filtrar(EditText et1, EditText et3){
+        boolean nombre, telefono;
+        if(campoVacio(et1.getText().toString())) {
+            nombre = false;
+            tostada(getString(R.string.nombreOblig));
+        }else
+            nombre = true;
+
+        if(campoVacio(et3.getText().toString())) {
+            telefono = false;
+            tostada(getString(R.string.tlfOblig));
+        }else
+            telefono = true;
+
+        if(telefono && nombre){
+            return true;
+        }else
+            return false;
+    }
+
+    public void fotoCamara(Intent data){
+        Bundle extras = data.getExtras();
+        foto = (Bitmap) extras.get(getString(R.string.datos));
+        Uri uri = getImageUri(getApplicationContext(), foto);
+        fotoPath = getPath(getApplicationContext(), uri);
+        ivNewUser.setImageBitmap(foto);
+        seleccionada = true;
+    }
+
+    public void fotoGaleria(Intent data){
+        Uri selectedImageUri = data.getData();
+        fotoPath = getPath(getApplicationContext(), selectedImageUri);
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(fotoPath);
+            foto = Bitmap.createScaledBitmap(bitmap, 220, 250, false);
+            ivNewUser.setImageBitmap(foto);
+            seleccionada = true;
+        }catch(Exception c){
+            tostada(getString(R.string.error));
+        }
     }
 
     //Intent para obtener una imagen de la galeria
@@ -421,10 +536,48 @@ public class Principal extends Activity {
         registerForContextMenu(lv);
         seleccionada = false;
         Bitmap aux = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                R.drawable.ic_launcher);
+                R.drawable.ic_agenda);
+        Uri uri = getImageUri(getApplicationContext(), aux);
+        defectoPath = getPath(getApplicationContext(), uri);
         defecto = Bitmap.createScaledBitmap(aux, 200, 250, false);
         escuchadorLista();
-        cargarListaPrueba();
+    }
+
+    public void leerXml() throws IOException, XmlPullParserException {
+        String nombre = null, email = null, tlf = null;
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        XmlPullParser xpp = factory.newPullParser();
+
+        xpp.setInput(new FileInputStream(new File(getFilesDir(), "contactos.xml")), "utf-8");
+        System.out.println(getFilesDir());
+        int eventType = xpp.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if(eventType == XmlPullParser.START_TAG) {
+                System.out.println("Start Tag "+ xpp.getName());
+                if(xpp.getName().compareTo("Nombre") == 0){
+                    nombre = xpp.nextText();
+                    System.out.println(nombre);
+                }else if(xpp.getName().compareTo("Email") == 0){
+                    email = xpp.nextText();
+                    System.out.println(email);
+                }else if(xpp.getName().compareTo("Telefono") == 0){
+                    tlf = xpp.nextText();
+                    System.out.println(tlf);
+                }
+            } else if(eventType == XmlPullParser.END_TAG) {
+                System.out.println("End Tag " +xpp.getName());
+                if(xpp.getName().compareTo("Contacto") == 0){
+                    System.out.println("Nombre:" +nombre);
+                    System.out.println("Email:" +email);
+                    System.out.println("Telefono:" +tlf);
+                    contactos.add(new Contacto(nombre, email, tlf, defectoPath));
+                }
+            }
+            eventType = xpp.next();
+        }
+        System.out.println("End document");
+        ad.notifyDataSetChanged();
     }
 
     //Intent para realizar una llamada
@@ -472,6 +625,14 @@ public class Principal extends Activity {
         Intent it = new Intent(Intent.ACTION_SENDTO, uri);
         startActivity(it);
     }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
     private void tostada(String s){
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }

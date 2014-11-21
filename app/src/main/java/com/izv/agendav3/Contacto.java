@@ -1,24 +1,32 @@
 package com.izv.agendav3;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 
 /**
  * Created by 2dam on 06/10/2014.
  */
-public class Contacto implements Comparable<Contacto> {
+public class Contacto implements Comparable<Contacto>, Parcelable, Serializable {
 
     private String nombre, mail, telefono;
-    private Bitmap imagen;
+    private String imagen;
 
-    public Bitmap getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(Bitmap imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
-    public Contacto(String nombre, String mail, String telefono, Bitmap foto) {
+    public Contacto(){
+
+    }
+
+    public Contacto(String nombre, String mail, String telefono, String foto) {
         this.nombre = nombre;
         this.mail = mail;
         this.telefono = telefono;
@@ -51,11 +59,39 @@ public class Contacto implements Comparable<Contacto> {
 
     @Override
     public String toString() {
-        return super.toString();
+        return nombre + " " + mail + " " + telefono;
     }
 
     @Override
     public int compareTo(Contacto contacto) {
         return this.getNombre().toLowerCase().compareTo(contacto.getNombre().toLowerCase());
+    }
+
+    @Override
+    public boolean equals (Object obj) {
+        if (obj instanceof Contacto) {
+            Contacto tmpPersona = (Contacto) obj;
+            if (this.nombre.equals(tmpPersona.nombre) && this.mail.equals(tmpPersona.mail) &&
+                    this.telefono == tmpPersona.telefono){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(nombre);
+        parcel.writeString(mail);
+        parcel.writeString(telefono);
+        parcel.writeString(imagen);
     }
 }

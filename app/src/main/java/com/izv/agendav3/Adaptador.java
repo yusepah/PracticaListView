@@ -2,6 +2,7 @@ package com.izv.agendav3;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,6 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
     private LayoutInflater i;
     /*HashMap<String, Integer> azIndexer;
     String[]sections;*/
-
 
     public Adaptador(Context context, int resource, ArrayList<Contacto> objects){
         super(context, resource, objects);
@@ -111,8 +111,8 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
         vh.tv2.setText(contactos.get(position).getMail());
         vh.tv3.setText(contactos.get(position).getTelefono());
         vh.tv3.setTag(position);
-        Bitmap imagen = Bitmap.createScaledBitmap(contactos.get(position).getImagen(),
-                200, 225, false);
+        Bitmap img = BitmapFactory.decodeFile(contactos.get(position).getImagen());
+        Bitmap imagen = Bitmap.createScaledBitmap(img, 200, 225, false);
         vh.iv.setImageBitmap(imagen);
         vh.x.setTag(position);
         vh.iv.setTag(position);

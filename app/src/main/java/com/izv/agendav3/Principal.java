@@ -93,16 +93,6 @@ public class Principal extends Activity {
         return super.onContextItemSelected(item);
     }
 
-    public void xml() throws IOException, XmlPullParserException {
-        File archivoXml = new File(getFilesDir(), "contactos.xml");
-        if(archivoXml.exists()){
-            leerXml();
-        }else{
-            crearXml();
-            leerXml();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,6 +139,7 @@ public class Principal extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Para guardar los datos para el cambio de orientacion
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -156,6 +147,7 @@ public class Principal extends Activity {
         outState.putParcelableArrayList("guardar", guardar);
     }
 
+    //Para recuperar los datos en el cambio de orientacion
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -221,6 +213,7 @@ public class Principal extends Activity {
         });
     }
 
+    //Listener para la imagen de los elementos del listview
     public void escuchadorImagen(){
         //Escuchador para seleccionar una imagen de la galeria o de la cámara
         ivNewUser.setOnClickListener(new View.OnClickListener() {
@@ -352,6 +345,7 @@ public class Principal extends Activity {
     /*                        AUXILIARES                           */
     /***************************************************************/
 
+    //Metodo para aceptar un nuevo contacto
     public void aceptarNuevo(EditText et1, EditText et2, EditText et3){
         if (seleccionada) {
             contactos.add(new Contacto(et1.getText().toString(),
@@ -369,6 +363,7 @@ public class Principal extends Activity {
         tostada(getString(R.string.anadido));
     }
 
+    //Metodo para aceptar el contacto editado
     public void aceptarEditado(int posicion, EditText et1, EditText et2, EditText et3){
         if (seleccionada) {
             Uri uri = getImageUri(getApplicationContext(), foto);
@@ -392,6 +387,7 @@ public class Principal extends Activity {
         startActivity(dialogo);
     }
 
+    //Para mostrar la opcion de añadir en el AlertDialog
     public void añadir(AlertDialog alert){
         alert.setTitle(R.string.action_nuevo);
         alert.setIcon(android.R.drawable.ic_menu_add);
@@ -420,6 +416,7 @@ public class Principal extends Activity {
         return false;
     }
 
+    //Para guardar un contacto en el xml
     public void contacto(XmlSerializer docxml, int i) throws IOException {
         docxml.startTag(null, "Contacto");
 
@@ -438,6 +435,7 @@ public class Principal extends Activity {
         docxml.endTag(null, "Contacto");
     }
 
+    //Metodo para crear el xml
     public void crearXml(){
         try {
             File salida = new File(getFilesDir(), "contactos.xml");
@@ -461,6 +459,7 @@ public class Principal extends Activity {
         }
     }
 
+    //Para mostrar la opcion de editar en el alertdialog
     public void editar(AlertDialog alert, EditText et1, EditText et2, EditText et3, int posicion){
         alert.setTitle(R.string.editar);
         alert.setIcon(android.R.drawable.ic_menu_edit);
@@ -472,6 +471,7 @@ public class Principal extends Activity {
         seleccionada = false;
     }
 
+    //Para asegurarnos que el nombre y el telefono se rellenan
     public boolean filtrar(EditText et1, EditText et3){
         boolean nombre, telefono;
         if(campoVacio(et1.getText().toString())) {
@@ -492,6 +492,7 @@ public class Principal extends Activity {
             return false;
     }
 
+    //Intent para obtener una foto de la camara
     public void fotoCamara(Intent data){
         Bundle extras = data.getExtras();
         foto = (Bitmap) extras.get(getString(R.string.datos));
@@ -501,6 +502,7 @@ public class Principal extends Activity {
         seleccionada = true;
     }
 
+    //Metodo para cargar una foto de la galeria
     public void fotoGaleria(Intent data){
         Uri selectedImageUri = data.getData();
         fotoPath = getPath(getApplicationContext(), selectedImageUri);
@@ -543,6 +545,7 @@ public class Principal extends Activity {
         escuchadorLista();
     }
 
+    //Metodo para leer el XML
     public void leerXml() throws IOException, XmlPullParserException {
         String nombre = null, email = null, tlf = null;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -602,7 +605,7 @@ public class Principal extends Activity {
         startActivity(emailIntent);
     }
 
-    //Metodo que devuelve un Path dado un Uri
+    //Metodo que devuelve un Path dado un Uri(no se como hacerlo de otra manera)
     private String getPath(Context context, Uri uri){
         Cursor cursor = null;
         try {
@@ -626,6 +629,7 @@ public class Principal extends Activity {
         startActivity(it);
     }
 
+    //Obtener uri de un bitmap
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -635,5 +639,16 @@ public class Principal extends Activity {
 
     private void tostada(String s){
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+
+    //Metodo para crear o leer el archivo xml
+    public void xml() throws IOException, XmlPullParserException {
+        File archivoXml = new File(getFilesDir(), "contactos.xml");
+        if(archivoXml.exists()){
+            leerXml();
+        }else{
+            crearXml();
+            leerXml();
+        }
     }
 }

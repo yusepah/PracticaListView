@@ -1,41 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--Nombre de la aplicación-->
     <string name="app_name">AgendaV3</string>
-    <string name="hello_world">Hello world!</string>
+
+    <!--Menu-->
     <string name="action_nuevo">Nuevo Contacto</string>
     <string name="action_cerrar">Cerrar Agenda</string>
+
+    <!--Titulo-->
     <string name="agenda">AGENDA A-Z</string>
+
+    <!--Hints-->
     <string name="nombreHint">Nombre</string>
     <string name="mailHint">eMail</string>
     <string name="telefonoHint">Telefono</string>
+
+    <!--Botones-->
     <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
+
+    <!--Tostadas-->
     <string name="anadido">Contacto Añadido</string>
     <string name="editado">Contacto Editado</string>
+    <string name="todosBorrados">Contactos Borrados</string>
+    <string name="borrado">Contacto Borrado</string>
+
+    <!--AlertDialog-->
     <string name="borrar">Borrar Contacto</string>
     <string name="editar">Editar Contacto</string>
     <string name="deseaEliminar">¿Desea eliminar?</string>
     <string name="carga">Carga de fotos</string>
     <string name="donde">Elija de donde quiere cargar la foto</string>
     <string name="galeria">Galeria</string>
-    <string name="imagenes">image/*</string>
-    <string name="camara">Cámara</string>
-    <string name="datos">data</string>
-    <string name="borrado">Contacto Borrado</string>
     <string name="llamada">Hacer Llamada</string>
     <string name="mail">Enviar Email</string>
     <string name="opcion">Seleccione una opcion</string>
     <string name="hacer">¿Qué desea hacer?</string>
-    <string name="nombreOblig">El campo Nombre es obligatorio.</string>
-    <string name="tlfOblig">El campo Telefono es obligatorio.</string>
     <string name="textMessage">Mensaje de texto</string>
-    <string name="error">Error al cargar la imagen</string>
     <string name="borrarTodos">Borrar TODOS</string>
     <string name="confirmarTodos">Borrar TODOS los Contactos</string>
-    <string name="todosBorrados">Contactos Borrados</string>
     <string name="mailto">mailto:</string>
+
+    <!--Auxiliares-->
+    <string name="imagenes">image/*</string>
+    <string name="camara">Cámara</string>
+    <string name="datos">data</string>
     <string name="text">text/plain</string>
+
+    <!--Required-->
+    <string name="nombreOblig">El campo Nombre es obligatorio.</string>
+    <string name="tlfOblig">El campo Telefono es obligatorio.</string>
+
+    <!--Error-->
+    <string name="error">Error al cargar la imagen</string>
+
+    <!--About-->
     <string name="about">Acerca de...</string>
     <string name="acercaDe">Esta aplicación ha sido desarrollada como práctica de la asignatura
         PMDM del uso de ListView. Realizado por Jose Alberto Delgado.</string>

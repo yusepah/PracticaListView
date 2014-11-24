@@ -7,6 +7,7 @@
     <!--Menu-->
     <string name="action_nuevo">New Contact</string>
     <string name="action_cerrar">Close Contact List</string>
+    <string name="borrarTodos">Delete ALL</string>
 
     <!--Titulo-->
     <string name="agenda">CONTACT LIST A-Z</string>
@@ -39,7 +40,6 @@
     <string name="hacer">What do you want to do?</string>
     <string name="mailto">mailto:</string>
     <string name="textMessage">Text Message</string>
-    <string name="borrarTodos">Delete ALL</string>
     <string name="confirmarTodos">Delete ALL List</string>
 
     <!--Auxiliares-->

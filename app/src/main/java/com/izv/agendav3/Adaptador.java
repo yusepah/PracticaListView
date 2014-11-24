@@ -111,8 +111,10 @@ public class Adaptador extends ArrayAdapter<Contacto> /*implements SectionIndexe
         vh.tv2.setText(contactos.get(position).getMail());
         vh.tv3.setText(contactos.get(position).getTelefono());
         vh.tv3.setTag(position);
-        Bitmap img = BitmapFactory.decodeFile(contactos.get(position).getImagen());
-        Bitmap imagen = Bitmap.createScaledBitmap(img, 200, 225, false);
+        Bitmap img = null;
+        Bitmap imagen = null;
+        img = BitmapFactory.decodeFile(contactos.get(position).getImagen());
+        imagen = Bitmap.createScaledBitmap(img, 200, 225, false);
         vh.iv.setImageBitmap(imagen);
         vh.x.setTag(position);
         vh.iv.setTag(position);

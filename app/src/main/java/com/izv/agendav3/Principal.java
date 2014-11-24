@@ -183,7 +183,8 @@ public class Principal extends Activity {
         });
     }
 
-    public void escuchadorAceptar(final AlertDialog alert, final EditText et1, final EditText et2, final EditText et3, final int posicion, final int id){
+    public void escuchadorAceptar(final AlertDialog alert, final EditText et1, final EditText et2,
+                                  final EditText et3, final int posicion, final int id){
         /*Listener del boton Aceptar sobreescrito para poder validar el cambo Nombre y Telefono
         *                           que son obligatorios*/
         alert.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -197,6 +198,7 @@ public class Principal extends Activity {
                         if(id == 0){
                             if(filtrar(et1, et3)) {
                                 aceptarEditado(posicion, et1, et2, et3);
+                                ad.notifyDataSetChanged();
                                 alert.dismiss();
                             }
                         }
@@ -204,6 +206,7 @@ public class Principal extends Activity {
                         if (id == 1) {
                             if(filtrar(et1, et3)) {
                                 aceptarNuevo(et1, et2, et3);
+                                ad.notifyDataSetChanged();
                                 alert.dismiss();
                             }
                         }
@@ -222,8 +225,8 @@ public class Principal extends Activity {
                 dialogoFoto(view);
             }
         });
-
     }
+
     /***************************************************************/
     /*                 METODOS MENU/ALERTDIALOG                    */
     /***************************************************************/
@@ -262,6 +265,7 @@ public class Principal extends Activity {
         }
         if(id == 0){
             borrarTodos();
+            ad.notifyDataSetChanged();
             tostada(getString(R.string.todosBorrados));
         }
     }
@@ -358,8 +362,8 @@ public class Principal extends Activity {
                     defectoPath));
             crearXml();
         }
-        seleccionada = false;
         ad.notifyDataSetChanged();
+        seleccionada = false;
         tostada(getString(R.string.anadido));
     }
 
@@ -377,7 +381,6 @@ public class Principal extends Activity {
         contactos.get(posicion).setMail(et2.getText().toString());
         crearXml();
         seleccionada = false;
-        ad.notifyDataSetChanged();
         tostada(getString(R.string.editado));
     }
 
@@ -432,6 +435,10 @@ public class Principal extends Activity {
         docxml.text(contactos.get(i).getTelefono());
         docxml.endTag(null, "Telefono");
 
+        docxml.startTag(null, "Foto");
+        docxml.text(contactos.get(i).getImagen());
+        docxml.endTag(null, "Foto");
+
         docxml.endTag(null, "Contacto");
     }
 
@@ -463,7 +470,8 @@ public class Principal extends Activity {
     public void editar(AlertDialog alert, EditText et1, EditText et2, EditText et3, int posicion){
         alert.setTitle(R.string.editar);
         alert.setIcon(android.R.drawable.ic_menu_edit);
-        Bitmap img = BitmapFactory.decodeFile(contactos.get(posicion).getImagen());
+        Bitmap bitmap = BitmapFactory.decodeFile(contactos.get(posicion).getImagen());
+        Bitmap img = Bitmap.createScaledBitmap(bitmap, 220, 250, false);
         ivNewUser.setImageBitmap(img);
         et1.setText(contactos.get(posicion).getNombre());
         et2.setText(contactos.get(posicion).getMail());
@@ -477,19 +485,20 @@ public class Principal extends Activity {
         if(campoVacio(et1.getText().toString())) {
             nombre = false;
             tostada(getString(R.string.nombreOblig));
-        }else
+        }else {
             nombre = true;
-
+        }
         if(campoVacio(et3.getText().toString())) {
             telefono = false;
             tostada(getString(R.string.tlfOblig));
-        }else
+        }else {
             telefono = true;
-
+        }
         if(telefono && nombre){
             return true;
-        }else
+        }else {
             return false;
+        }
     }
 
     //Intent para obtener una foto de la camara
@@ -547,39 +556,30 @@ public class Principal extends Activity {
 
     //Metodo para leer el XML
     public void leerXml() throws IOException, XmlPullParserException {
-        String nombre = null, email = null, tlf = null;
+        String nombre = null, email = null, tlf = null, foto = null;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser xpp = factory.newPullParser();
-
         xpp.setInput(new FileInputStream(new File(getFilesDir(), "contactos.xml")), "utf-8");
-        System.out.println(getFilesDir());
         int eventType = xpp.getEventType();
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if(eventType == XmlPullParser.START_TAG) {
-                System.out.println("Start Tag "+ xpp.getName());
                 if(xpp.getName().compareTo("Nombre") == 0){
                     nombre = xpp.nextText();
-                    System.out.println(nombre);
                 }else if(xpp.getName().compareTo("Email") == 0){
                     email = xpp.nextText();
-                    System.out.println(email);
                 }else if(xpp.getName().compareTo("Telefono") == 0){
                     tlf = xpp.nextText();
-                    System.out.println(tlf);
+                }else if(xpp.getName().compareTo("Foto") == 0){
+                    foto = xpp.nextText();
                 }
             } else if(eventType == XmlPullParser.END_TAG) {
-                System.out.println("End Tag " +xpp.getName());
                 if(xpp.getName().compareTo("Contacto") == 0){
-                    System.out.println("Nombre:" +nombre);
-                    System.out.println("Email:" +email);
-                    System.out.println("Telefono:" +tlf);
-                    contactos.add(new Contacto(nombre, email, tlf, defectoPath));
+                    contactos.add(new Contacto(nombre, email, tlf, foto));
                 }
             }
             eventType = xpp.next();
         }
-        System.out.println("End document");
         ad.notifyDataSetChanged();
     }
 

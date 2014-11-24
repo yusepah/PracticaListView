@@ -152,9 +152,9 @@ public class Principal extends Activity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         ArrayList <Contacto>aux;
-        aux = savedInstanceState.getParcelableArrayList("guardar");
-        contactos = aux;
-        ad.notifyDataSetChanged();
+        contactos = savedInstanceState.getParcelableArrayList("guardar");
+        ad = new Adaptador(this, R.layout.lista_detalle, contactos);
+        lv.setAdapter(ad);
     }
 
     /***************************************************************/

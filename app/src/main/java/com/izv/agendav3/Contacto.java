@@ -94,4 +94,21 @@ public class Contacto implements Comparable<Contacto>, Parcelable, Serializable 
         parcel.writeString(telefono);
         parcel.writeString(imagen);
     }
+
+    private Contacto(Parcel in) {
+        this.nombre = in.readString();
+        this.mail = in.readString();
+        this.telefono = in.readString();
+        this.imagen = in.readString();
+    }
+
+    public static final Parcelable.Creator<Contacto> CREATOR = new Parcelable.Creator<Contacto>() {
+        public Contacto createFromParcel(Parcel in) {
+            return new Contacto(in);
+        }
+
+        public Contacto[] newArray(int size) {
+            return new Contacto[size];
+        }
+    };
 }
